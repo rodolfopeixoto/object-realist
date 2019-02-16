@@ -95,9 +95,6 @@ void MakeShapes(void)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	}
 
-
-	
-{
 	glBegin(GL_POLYGON);
  
       // Right face (x = 10.0f)
@@ -153,24 +150,6 @@ void MakeShapes(void)
       glVertex3f(-10.0f, -10.0f, -10.0f);
       glVertex3f(-10.0f,  10.0f, -10.0f);
       glVertex3f( 10.0f,  10.0f, -10.0f);
-	glEnd();
-
-	
-
-	glBegin(GL_POLYGON);
-		glNormal3f(0.0,1.0,0.0);
-		glVertex3f(-SIZE,1.2*SIZE,0.5*SIZE);	
-		glVertex3f(SIZE,1.2*SIZE,0.5*SIZE);
-		glVertex3f(SIZE,1.2*SIZE,-0.5*SIZE);
-		glVertex3f(-SIZE,1.2*SIZE,-0.5*SIZE);	
-	glEnd();
-	
-	glBegin(GL_POLYGON);
-		glNormal3f(0.0,0.0,1.0);
-		glVertex3f(-SIZE,1.2*SIZE,-0.5*SIZE);
-		glVertex3f(SIZE,1.2*SIZE,-0.5*SIZE);
-		glVertex3f(SIZE,2*SIZE,-0.5*SIZE);
-		glVertex3f(-SIZE,2*SIZE,-0.5*SIZE);
 	glEnd();
 
 }
