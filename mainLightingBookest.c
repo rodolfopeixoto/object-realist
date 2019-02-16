@@ -98,7 +98,7 @@ void MakeShapes(void)
 	glBegin(GL_POLYGON);
  
       // Right face (x = 10.0f)
-	  glNormal3f(1.0,0.0,0.0);
+	  glNormal3f(0.0,0.0,1.0);
       glVertex3f(10.0f,  10.0f, -10.0f);
       glVertex3f(10.0f,  10.0f,  10.0f);
       glVertex3f(10.0f, -10.0f,  10.0f);
@@ -107,7 +107,7 @@ void MakeShapes(void)
 
 	glBegin(GL_POLYGON);
       // Left face (x = -10.0f) D
-	  glNormal3f(1.0,0.0,0.0);
+	  glNormal3f(0.0,1.0,0.0);
       glVertex3f(-10.0f,  10.0f,  10.0f);
       glVertex3f(-10.0f,  10.0f, -10.0f);
       glVertex3f(-10.0f, -10.0f, -10.0f);
