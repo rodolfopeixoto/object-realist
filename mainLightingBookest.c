@@ -98,6 +98,7 @@ void MakeShapes(void)
 	glBegin(GL_POLYGON);
  
       // Right face (x = 10.0f)
+	  glNormal3f(0.0,0.0,1.0);
       glVertex3f(10.0f,  10.0f, -10.0f);
       glVertex3f(10.0f,  10.0f,  10.0f);
       glVertex3f(10.0f, -10.0f,  10.0f);
@@ -106,6 +107,7 @@ void MakeShapes(void)
 
 	glBegin(GL_POLYGON);
       // Left face (x = -10.0f)
+	  glNormal3f(0.0,0.0,1.0);
       glVertex3f(-10.0f,  10.0f,  10.0f);
       glVertex3f(-10.0f,  10.0f, -10.0f);
       glVertex3f(-10.0f, -10.0f, -10.0f);
@@ -113,6 +115,7 @@ void MakeShapes(void)
 	glEnd();
 		  
 	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,0.0,1.0);
 	  // Top face (y = 1.0f)
       glVertex3f( 10.0f, 10.0f, -10.0f);
       glVertex3f(-10.0f, 10.0f, -10.0f);
@@ -121,6 +124,7 @@ void MakeShapes(void)
 	glEnd();
 		  
 	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,0.0,1.0);
       // Bottom face (y = -10.0f)
       glColor3f(0.0f, 1.0f, 0.0f);
       glVertex3f( 10.0f, -10.0f,  10.0f);
@@ -131,6 +135,7 @@ void MakeShapes(void)
 
 	
 	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,0.0,1.0);
       // Front face  (z = 10.0f)
       glVertex3f( 10.0f,  10.0f, 10.0f);
       glVertex3f(-10.0f,  10.0f, 10.0f);
@@ -139,6 +144,7 @@ void MakeShapes(void)
 	glEnd();
  	
 	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,0.0,1.0);
       // Back face (z = -10.0f)
       glVertex3f( 10.0f, -10.0f, -10.0f);
       glVertex3f(-10.0f, -10.0f, -10.0f);
@@ -194,7 +200,7 @@ static void hotkey(unsigned char k, int x, int y)
 // Switch to flat shading
 	  case 'f':
 	  RendMode=2;
-	  glShadeModel(GL_SMOOTH);
+	  glShadeModel(GL_FLAT);
 	  break;		  
    }
 }
