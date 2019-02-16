@@ -65,48 +65,20 @@ void MakeShapes(void)
 
 // Since the axes are to be drawn as solid lines, we disable lighting for them.
     glDisable(GL_LIGHTING);
-	glBegin(GL_QUADS);
-	  // Top face (y = 1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f( 1.0f, 1.0f, -1.0f);
-      glVertex3f(-1.0f, 1.0f, -1.0f);
-      glVertex3f(-1.0f, 1.0f,  1.0f);
-      glVertex3f( 1.0f, 1.0f,  1.0f);
- 
-      // Bottom face (y = -1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f( 1.0f, -1.0f,  1.0f);
-      glVertex3f(-1.0f, -1.0f,  1.0f);
-      glVertex3f(-1.0f, -1.0f, -1.0f);
-      glVertex3f( 1.0f, -1.0f, -1.0f);
- 
-      // Front face  (z = 1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f( 1.0f,  1.0f, 1.0f);
-      glVertex3f(-1.0f,  1.0f, 1.0f);
-      glVertex3f(-1.0f, -1.0f, 1.0f);
-      glVertex3f( 1.0f, -1.0f, 1.0f);
- 
-      // Back face (z = -1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f( 1.0f, -1.0f, -1.0f);
-      glVertex3f(-1.0f, -1.0f, -1.0f);
-      glVertex3f(-1.0f,  1.0f, -1.0f);
-      glVertex3f( 1.0f,  1.0f, -1.0f);
- 
-      // Left face (x = -1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f(-1.0f,  1.0f,  1.0f);
-      glVertex3f(-1.0f,  1.0f, -1.0f);
-      glVertex3f(-1.0f, -1.0f, -1.0f);
-      glVertex3f(-1.0f, -1.0f,  1.0f);
- 
-      // Right face (x = 1.0f)
-      glColor3f(0.0f, 1.0f, 0.0f);     // Green
-      glVertex3f(1.0f,  1.0f, -1.0f);
-      glVertex3f(1.0f,  1.0f,  1.0f);
-      glVertex3f(1.0f, -1.0f,  1.0f);
-      glVertex3f(1.0f, -1.0f, -1.0f);
+	glBegin(GL_LINES);
+
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(2*SIZE,0.0,0.0);
+
+	glColor4f(0.0, 1.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,2*SIZE,0.0);
+
+	glColor4f(0.0, 0.0, 1.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,0.0,2*SIZE);
+	      
 	glEnd();
 	        
 // The polygons are rendered differently depending on the selected rendering modes:
@@ -122,14 +94,68 @@ void MakeShapes(void)
 		glEnable(GL_LIGHTING);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	}
+
+
+	
+{
+	glBegin(GL_POLYGON);
+ 
+      // Right face (x = 10.0f)
+	  glNormal3f(1.0f,0.0,0.0);
+      glVertex3f(10.0f,  10.0f, -10.0f);
+      glVertex3f(10.0f,  10.0f,  10.0f);
+      glVertex3f(10.0f, -10.0f,  10.0f);
+      glVertex3f(10.0f, -10.0f, -10.0f);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+      // Left face (x = -10.0f) D
+	  glNormal3f(1.0f,0.0,0.0);
+      glVertex3f(-10.0f,  10.0f,  10.0f);
+      glVertex3f(-10.0f,  10.0f, -10.0f);
+      glVertex3f(-10.0f, -10.0f, -10.0f);
+      glVertex3f(-10.0f, -10.0f,  10.0f);
+	glEnd();
 		  
 	glBegin(GL_POLYGON);
 		glNormal3f(0.0,0.0,1.0);
-		glVertex3f(-SIZE,-SIZE,0.5*SIZE);
-		glVertex3f(SIZE, -SIZE,0.5*SIZE);
-		glVertex3f(SIZE,1.2*SIZE,0.5*SIZE);	
-		glVertex3f(-SIZE,1.2*SIZE,0.5*SIZE);	
+	  // Top face (y = 1.0f)
+      glVertex3f( 10.0f, 10.0f, -10.0f);
+      glVertex3f(-10.0f, 10.0f, -10.0f);
+      glVertex3f(-10.0f, 10.0f,  10.0f);
+      glVertex3f( 10.0f, 10.0f,  10.0f);
 	glEnd();
+		  
+	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,0.0,1.0);
+      // Bottom face (y = -10.0f)
+      glColor3f(0.0f, 1.0f, 0.0f);
+      glVertex3f( 10.0f, -10.0f,  10.0f);
+      glVertex3f(-10.0f, -10.0f,  10.0f);
+      glVertex3f(-10.0f, -10.0f, -10.0f);
+      glVertex3f( 10.0f, -10.0f, -10.0f);
+	glEnd();
+
+	
+	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,1.0,0.0);
+      // Front face  (z = 10.0f)
+      glVertex3f( 10.0f,  10.0f, 10.0f);
+      glVertex3f(-10.0f,  10.0f, 10.0f);
+      glVertex3f(-10.0f, -10.0f, 10.0f);
+      glVertex3f( 10.0f, -10.0f, 10.0f);
+	glEnd();
+ 	
+	glBegin(GL_POLYGON);
+	  glNormal3f(0.0,1.0,0.0);
+      // Back face (z = -10.0f)
+      glVertex3f( 10.0f, -10.0f, -10.0f);
+      glVertex3f(-10.0f, -10.0f, -10.0f);
+      glVertex3f(-10.0f,  10.0f, -10.0f);
+      glVertex3f( 10.0f,  10.0f, -10.0f);
+	glEnd();
+
+	
 
 	glBegin(GL_POLYGON);
 		glNormal3f(0.0,1.0,0.0);
