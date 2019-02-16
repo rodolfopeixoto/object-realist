@@ -194,7 +194,7 @@ static void hotkey(unsigned char k, int x, int y)
 // Switch to flat shading
 	  case 'f':
 	  RendMode=2;
-	  glShadeModel(GL_FLAT);
+	  glShadeModel(GL_SMOOTH);
 	  break;		  
    }
 }
