@@ -320,6 +320,10 @@ void processMenuEvents(int option)
 		RendMode = GL_LINE;
 	else if (option == 4)
 		RendMode = GL_FILL;
+	else if (option == 5)
+		procSolido("data/dadosObjPlanar2.txt");
+	else if (option == 6)
+		procSolido("data/dadosObj2.txt");
 
 	glutPostRedisplay();
 }
@@ -331,6 +335,8 @@ void createGLUTMenus()
 	submenu1 = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("Objeto aberto",1);
 	glutAddMenuEntry("Objeto Fechado",2);
+	glutAddMenuEntry("Objeto aberto",5);
+	glutAddMenuEntry("Objeto Fechado",6);
 
 	submenu2 = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("Aramado",3);
