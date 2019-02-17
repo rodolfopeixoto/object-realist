@@ -333,10 +333,10 @@ void createGLUTMenus()
 	int menu, submenu1, submenu2;
 	
 	submenu1 = glutCreateMenu(processMenuEvents);
-	glutAddMenuEntry("Objeto aberto",1);
-	glutAddMenuEntry("Objeto Fechado",2);
-	glutAddMenuEntry("Objeto aberto",5);
-	glutAddMenuEntry("Objeto Fechado",6);
+	glutAddMenuEntry("Objeto aberto 1",1);
+	glutAddMenuEntry("Objeto Fechado 1",2);
+	glutAddMenuEntry("Objeto aberto 2",5);
+	glutAddMenuEntry("Objeto Fechado 2",6);
 
 	submenu2 = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("Aramado",3);
@@ -355,8 +355,8 @@ int main(int argc, char** argv)
 
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
    
-   glutInitWindowPosition(10, 10);    // posicao da janela na tela
-   glutInitWindowSize(600, 600);      // tamanho da janela (horiznotal e vertical)
+   glutInitWindowPosition(100, 100);    // posicao da janela na tela
+   glutInitWindowSize(650, 650);      // tamanho da janela (horiznotal e vertical)
    
    glutCreateWindow("Objetos 3D BREP - vertices e faces");
 
