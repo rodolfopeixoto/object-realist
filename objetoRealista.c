@@ -363,22 +363,68 @@ void createGLUTMenus()
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
+void MakeShapes(void)
+{
+  	
+
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(2*SIZE,0.0,0.0);
+
+	glColor4f(0.0, 1.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,2*SIZE,0.0);
+
+	glColor4f(0.0, 0.0, 1.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,0.0,2*SIZE);
+	      
+	glEnd();
+}
+
+
+static void draw( void )
+{
+	glClearColor (0.0, 0.0, 0.2, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glPushMatrix();
+
+// Placement and rotation of the scene.
+	glTranslatef(0.0,0.0,-5*SIZE);
+	glRotatef(beta, 1.0, 0.0, 0.0);
+	glRotatef(alpha, 0.0, 1.0, 0.0);
+	MakeShapes();
+	glFlush();			         
+	glPopMatrix(); 
+
+// This command will swap animation buffers to display the current frame.
+    glutSwapBuffers();
+}
+
+//============================================================
+static void idle( void )
+{
+// This function will call draw() as frequent as possible thus enabling us to make 
+// interaction and animation.
+
+   draw();
+}
+
 int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
 
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
    
-   glutInitWindowPosition(10, 10);    // posicao da janela na tela
-   glutInitWindowSize(600, 600);      // tamanho da janela (horiznotal e vertical)
-   
-   glutCreateWindow("Objetos 3D BREP - vertices e faces");
+   glutInitWindowPosition(100, 100);    // posicao da janela na tela
+   glutInitWindowSize(650, 650);      // tamanho da janela (horiznotal e vertical)
+   glutCreateWindow("Objetos 3D BREP - Comandos:  ->,  <-,  <f>,  and  <Esc> keys.");
 
    init();
    
-   glutDisplayFunc(display);   // funcao de mostrar objetos
    glutReshapeFunc(reshape);   // funcao de variacao de janela
-
+   glutIdleFunc(idle);
+   glutDisplayFunc(display);   // funcao de mostrar objetos
    glutSpecialFunc(keyboard);
 
    createGLUTMenus();  
