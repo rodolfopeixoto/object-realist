@@ -369,10 +369,10 @@ int main(int argc, char** argv)
 
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
    
-   glutInitWindowPosition(10, 10);    // posicao da janela na tela
-   glutInitWindowSize(600, 600);      // tamanho da janela (horiznotal e vertical)
+   glutInitWindowPosition(100, 100);    // posicao da janela na tela
+   glutInitWindowSize(650, 650);      // tamanho da janela (horiznotal e vertical)
    
-   glutCreateWindow("Objetos 3D BREP - vertices e faces");
+   glutCreateWindow("Objetos 3D BREP - Comandos:  -->,  <--,  <f>,  and  <Esc> keys.");
 
    init();
    
