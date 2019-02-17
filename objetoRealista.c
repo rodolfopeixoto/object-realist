@@ -4,9 +4,6 @@
 #include <stdio.h>   
 #include <math.h>
 
-
-#define	SIZE	10.0
-
 int RendMode = GL_LINE; 
 
 float ang_rot = 05.0; 
@@ -14,10 +11,8 @@ float ang_rot = 05.0;
 float vrot_x, vrot_y, vrot_z; 
 
 float local_scale = 0.12f;
-double alpha, beta;
 
 typedef float f4d[4];
-
 typedef struct st_vector_int
 {
 	int n;			// numero de elementos
@@ -66,13 +61,6 @@ float mat_difuso[] = {0.5, 0.0, 0.0, 1.0};
 float mat_especular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_emissao[] = {0, 0, 0, 1};
 float mat_brilho[] = {50.0};
-
-
-// Defining a point light source parameters
-GLfloat light_position1[] = {   0.0,   10.0*SIZE, 100.0*SIZE, 1.0 };
-GLfloat light_ambient[]   = {   0.1,   0.1,   0.1, 1.0 };
-GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
-GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 
 void calculaNormalFace(vector_int *fac, vector_f4d *vert)
 {
@@ -134,10 +122,8 @@ void initlights(void)
   
 //   float position[] = {0.0, 0.0, 2.0, 1.0};
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+   glLightfv(GL_LIGHT0, GL_AMBIENT, luz_ambiente);
+   glLightfv(GL_LIGHT0, GL_DIFFUSE, luz_difusa);
    
    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.3);
    
@@ -151,9 +137,6 @@ static void init(void)
    vrot_x = 0.0;
    vrot_y = 0.0;
    vrot_z = 1.0;
-   alpha=-20.0;
-   beta=20.0;
-   RendMode=1;
    
    glClearColor(1.0, 1.0, 1.0, 0.0);
    glEnable(GL_DEPTH_TEST);
@@ -169,6 +152,7 @@ void display(void)
     glLightfv(GL_LIGHT0, GL_POSITION, luz_Posicao);
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
 glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
@@ -359,52 +343,25 @@ void createGLUTMenus()
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-static void draw( void )
-{
-	// glClearColor (0.0, 0.0, 0.2, 0.0);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-	glPushMatrix();
-
-// Placement and rotation of the scene.
-	glTranslatef(0.0,0.0,-5*SIZE);
-	glRotatef(beta, 1.0, 0.0, 0.0);
-	glRotatef(alpha, 0.0, 1.0, 0.0);
-	display();
-	glFlush();			         
-	glPopMatrix(); 
-
-// This command will swap animation buffers to display the current frame.
-    glutSwapBuffers();
-}
-
-//============================================================
-static void idle( void )
-{
-// This function will call draw() as frequent as possible thus enabling us to make 
-// interaction and animation.
-
-   draw();
-}
-
 int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
 
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
    
-   glutInitWindowPosition(100, 100);    // posicao da janela na tela
-   glutInitWindowSize(650, 650);      // tamanho da janela (horiznotal e vertical)
-   glutCreateWindow("Objetos 3D BREP - Comandos:  ->,  <-,  <f>,  and  <Esc> keys.");
+   glutInitWindowPosition(10, 10);    // posicao da janela na tela
+   glutInitWindowSize(600, 600);      // tamanho da janela (horiznotal e vertical)
+   
+   glutCreateWindow("Objetos 3D BREP - vertices e faces");
 
    init();
    
-   glutReshapeFunc(reshape);   // funcao de variacao de janela
-   glutIdleFunc(idle);
    glutDisplayFunc(display);   // funcao de mostrar objetos
+   glutReshapeFunc(reshape);   // funcao de variacao de janela
+
    glutSpecialFunc(keyboard);
 
    createGLUTMenus();  
    glutMainLoop();
    return 0;
 }
-

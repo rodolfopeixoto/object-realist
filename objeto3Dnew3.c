@@ -66,34 +66,34 @@ float mat_especular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_emissao[] = {0, 0, 0, 1};
 float mat_brilho[] = {50.0};
 
-void calculaNormalFace(vector_int *fac, vector_f4d *vert)
+void calculaNormalFace(vector_int *face, vector_f4d *vertices)
 {
-	f4d a, b, vNorm;
+	f4d a, b, vetorNormal;
 	float s;
 	int nn, io, ia, ib;
 
-	nn = fac->n - 1;
-	io = fac->indice[0];
-	ia = fac->indice[nn];
-	ib = fac->indice[1];
+	nn = face->n - 1;
+	io = face->indice[0];
+	ia = face->indice[nn];
+	ib = face->indice[1];
 
-	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
-	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
-	a[2] = vert->vPoint[ia][2] - vert->vPoint[io][2];
+	a[0] = vertices->vPoint[ia][0] - vertices->vPoint[io][0];
+	a[1] = vertices->vPoint[ia][1] - vertices->vPoint[io][1];
+	a[2] = vertices->vPoint[ia][2] - vertices->vPoint[io][2];
 
-	b[0] = vert->vPoint[ib][0] - vert->vPoint[io][0];
-	b[1] = vert->vPoint[ib][1] - vert->vPoint[io][1];
-	b[2] = vert->vPoint[ib][2] - vert->vPoint[io][2];
+	b[0] = vertices->vPoint[ib][0] - vertices->vPoint[io][0];
+	b[1] = vertices->vPoint[ib][1] - vertices->vPoint[io][1];
+	b[2] = vertices->vPoint[ib][2] - vertices->vPoint[io][2];
 	
-	vNorm[0] = a[1]*b[2] - a[2]*b[1];
-	vNorm[1] = a[2]*b[0] - a[0]*b[2];
-	vNorm[2] = a[0]*b[1] - a[1]*b[0];
+	vetorNormal[0] = a[1]*b[2] - a[2]*b[1];
+	vetorNormal[1] = a[2]*b[0] - a[0]*b[2];
+	vetorNormal[2] = a[0]*b[1] - a[1]*b[0];
 
-	s = sqrt(vNorm[0]*vNorm[0]+vNorm[1]*vNorm[1]+vNorm[2]*vNorm[2]);
+	s = sqrt(vetorNormal[0]*vetorNormal[0]+vetorNormal[1]*vetorNormal[1]+vetorNormal[2]*vetorNormal[2]);
 
-	fac->vNormal[0] = vNorm[0] / s;
-	fac->vNormal[1] = vNorm[1] / s;
-	fac->vNormal[2] = vNorm[2] / s;
+	face->vNormal[0] = vetorNormal[0] / s;
+	face->vNormal[1] = vetorNormal[1] / s;
+	face->vNormal[2] = vetorNormal[2] / s;
 }
 
 void DisenaObjeto(un_objeto *obj)
