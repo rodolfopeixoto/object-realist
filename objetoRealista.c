@@ -67,6 +67,13 @@ float mat_especular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_emissao[] = {0, 0, 0, 1};
 float mat_brilho[] = {50.0};
 
+
+// Defining a point light source parameters
+GLfloat light_position1[] = {   0.0,   10.0*SIZE, 100.0*SIZE, 1.0 };
+GLfloat light_ambient[]   = {   0.1,   0.1,   0.1, 1.0 };
+GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
+GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
+
 void calculaNormalFace(vector_int *fac, vector_f4d *vert)
 {
 	f4d a, b, vNorm;
