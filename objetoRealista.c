@@ -14,6 +14,7 @@ float ang_rot = 05.0;
 float vrot_x, vrot_y, vrot_z; 
 
 float local_scale = 0.12f;
+double alpha, beta;
 
 typedef float f4d[4];
 
@@ -142,8 +143,22 @@ static void init(void)
    vrot_y = 0.0;
    vrot_z = 1.0;
    
+   	alpha=-20.0; beta=20.0; RendMode=1;
    glClearColor(1.0, 1.0, 1.0, 0.0);
-   glEnable(GL_DEPTH_TEST);
+// Setting up a point light source
+	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+
+// Enabling lighting with the light source #1
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
+
+// enabling both side illumination for the polygons and hidden surface/line removal
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+	
    glEnable(GL_MAP2_VERTEX_3);
 //   glEnable(GL_AUTO_NORMAL);
    glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
