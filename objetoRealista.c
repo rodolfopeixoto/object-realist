@@ -15,11 +15,6 @@ float vrot_x, vrot_y, vrot_z;
 
 float local_scale = 0.12f;
 double alpha, beta;
-// Defining a point light source parameters
-GLfloat light_position1[] = {   0.0,   10.0*SIZE, 100.0*SIZE, 1.0 };
-GLfloat light_ambient[]   = {   0.1,   0.1,   0.1, 1.0 };
-GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
-GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 
 typedef float f4d[4];
 
@@ -132,8 +127,10 @@ void initlights(void)
   
 //   float position[] = {0.0, 0.0, 2.0, 1.0};
 
-   glLightfv(GL_LIGHT0, GL_AMBIENT, luz_ambiente);
-   glLightfv(GL_LIGHT0, GL_DIFFUSE, luz_difusa);
+	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
    
    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.3);
    
@@ -147,23 +144,12 @@ static void init(void)
    vrot_x = 0.0;
    vrot_y = 0.0;
    vrot_z = 1.0;
+   alpha=-20.0;
+   beta=20.0;
+   RendMode=1;
    
-   	alpha=-20.0; beta=20.0; RendMode=1;
    glClearColor(1.0, 1.0, 1.0, 0.0);
-// Setting up a point light source
-	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-
-// Enabling lighting with the light source #1
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT1);
-
-// enabling both side illumination for the polygons and hidden surface/line removal
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-    glEnable(GL_DEPTH_TEST);
-
+   glEnable(GL_DEPTH_TEST);
    glEnable(GL_MAP2_VERTEX_3);
 //   glEnable(GL_AUTO_NORMAL);
    glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
@@ -176,23 +162,6 @@ void display(void)
     glLightfv(GL_LIGHT0, GL_POSITION, luz_Posicao);
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-	glBegin(GL_LINES);
-
-	glColor4f(1.0, 0.0, 0.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(2*SIZE,0.0,0.0);
-
-	glColor4f(0.0, 1.0, 0.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,2*SIZE,0.0);
-
-	glColor4f(0.0, 0.0, 1.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,0.0,2*SIZE);
-	      
-	glEnd();
 
 glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
 glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
@@ -383,26 +352,6 @@ void createGLUTMenus()
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-void MakeShapes(void)
-{
-  	
-
-	glColor4f(1.0, 0.0, 0.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(2*SIZE,0.0,0.0);
-
-	glColor4f(0.0, 1.0, 0.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,2*SIZE,0.0);
-
-	glColor4f(0.0, 0.0, 1.0, 1.0);
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,0.0,2*SIZE);
-	      
-	glEnd();
-}
-
-
 static void draw( void )
 {
 	glClearColor (0.0, 0.0, 0.2, 0.0);
@@ -413,7 +362,7 @@ static void draw( void )
 	glTranslatef(0.0,0.0,-5*SIZE);
 	glRotatef(beta, 1.0, 0.0, 0.0);
 	glRotatef(alpha, 0.0, 1.0, 0.0);
-	MakeShapes();
+	display();
 	glFlush();			         
 	glPopMatrix(); 
 
