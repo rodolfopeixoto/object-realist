@@ -15,6 +15,11 @@ float vrot_x, vrot_y, vrot_z;
 
 float local_scale = 0.12f;
 double alpha, beta;
+// Defining a point light source parameters
+GLfloat light_position1[] = {   0.0,   10.0*SIZE, 100.0*SIZE, 1.0 };
+GLfloat light_ambient[]   = {   0.1,   0.1,   0.1, 1.0 };
+GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
+GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 
 typedef float f4d[4];
 
@@ -158,7 +163,7 @@ static void init(void)
 // enabling both side illumination for the polygons and hidden surface/line removal
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     glEnable(GL_DEPTH_TEST);
-	
+
    glEnable(GL_MAP2_VERTEX_3);
 //   glEnable(GL_AUTO_NORMAL);
    glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
