@@ -4,6 +4,9 @@
 #include <stdio.h>   
 #include <math.h>
 
+
+#define	SIZE	10.0
+
 int RendMode = GL_LINE; 
 
 float ang_rot = 05.0; 
@@ -154,6 +157,22 @@ void display(void)
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+	glBegin(GL_LINES);
+
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(2*SIZE,0.0,0.0);
+
+	glColor4f(0.0, 1.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,2*SIZE,0.0);
+
+	glColor4f(0.0, 0.0, 1.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,0.0,2*SIZE);
+	      
+	glEnd();
 
 glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
 glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
