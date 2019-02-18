@@ -155,7 +155,7 @@ void MakeShapes(void)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	}
 		  
-  display(void);
+  display();
 
 }
 
