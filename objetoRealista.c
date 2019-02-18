@@ -76,7 +76,7 @@ GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 //============================================================
 static void Init(void)
 {
-  display(void);
+  void display(void);
 // This function is called only once before any other functions are called
 	alpha=-20.0;
 	beta=20.0;
