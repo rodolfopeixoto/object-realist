@@ -1,24 +1,35 @@
+// This is a sample OpenGL/CLUT program for SC208 course.
+// Developed by Alexei Sourin, October 2003.
+// The students are to study this code and use it 
+// as a template for their assignment.
+// Open a new project "Win32 Console Application" and add
+// sample.c to Source Files 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <GL/glut.h>
-#include <stdlib.h> 
-#include <stdio.h>   
 #include <math.h>
 
-int RendMode = GL_LINE; 
+// The unit size used in this application's World Coordinate System. 
+// All other dimensions and parameters are made proportional to it.
+#define	SIZE	10.0
 
+
+int RendMode = GL_LINE;
+double alpha, beta;
 float ang_rot = 05.0; 
-
 float vrot_x, vrot_y, vrot_z; 
-
 float local_scale = 0.12f;
-
 typedef float f4d[4];
+
+
 typedef struct st_vector_int
 {
 	int n;			// numero de elementos
 	int *indice;	// elemento - indice del vertice
 	f4d vNormal;    // vetor normal da face
 } vector_int;
+
 
 typedef struct st_vector_f4d
 {
@@ -49,12 +60,6 @@ typedef struct st_objetos
 un_objeto *objeto = NULL;		// un objeto
 
 // ===========================================
-
-	// propriedades da luz
-float luz_ambiente[] = {0.2, 0.2, 0.0, 0.0};  // ambiente
-float luz_difusa[] = {1.0, 1.0, 1.0, 0.0};  // cor luz
-float movLuz = 10.0;   // angulo inicial da luz
-   
    // propriedades material
 float mat_ambiente[] = {0.3, 0.0, 0.0, 1.0};
 float mat_difuso[] = {0.5, 0.0, 0.0, 1.0};
@@ -62,189 +67,95 @@ float mat_especular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_emissao[] = {0, 0, 0, 1};
 float mat_brilho[] = {50.0};
 
-void calculaNormalFace(vector_int *fac, vector_f4d *vert)
+// Defining a point light source parameters
+GLfloat light_position1[] = {   0.0,   10.0*SIZE, 100.0*SIZE, 1.0 };
+GLfloat light_ambient[]   = {   0.1,   0.1,   0.1, 1.0 };
+GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
+GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
+
+//============================================================
+static void Init(void)
 {
-	f4d a, b, vNorm;
-	float s;
-	int nn, io, ia, ib;
+// This function is called only once before any other functions are called
+	alpha=-20.0;
+	beta=20.0;
+	RendMode=1;
 
-	nn = fac->n - 1;
-	io = fac->indice[0];
-	ia = fac->indice[nn];
-	ib = fac->indice[1];
-
-	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
-	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
-	a[2] = vert->vPoint[ia][2] - vert->vPoint[io][2];
-
-	b[0] = vert->vPoint[ib][0] - vert->vPoint[io][0];
-	b[1] = vert->vPoint[ib][1] - vert->vPoint[io][1];
-	b[2] = vert->vPoint[ib][2] - vert->vPoint[io][2];
-	
-	vNorm[0] = a[1]*b[2] - a[2]*b[1];
-	vNorm[1] = a[2]*b[0] - a[0]*b[2];
-	vNorm[2] = a[0]*b[1] - a[1]*b[0];
-
-	s = sqrt(vNorm[0]*vNorm[0]+vNorm[1]*vNorm[1]+vNorm[2]*vNorm[2]);
-
-	fac->vNormal[0] = vNorm[0] / s;
-	fac->vNormal[1] = vNorm[1] / s;
-	fac->vNormal[2] = vNorm[2] / s;
-}
-
-void DisenaObjeto(un_objeto *obj)
-{
-	int i, j, h;
-
-	if(!obj)
-		return;
-
-	glPolygonMode(GL_FRONT_AND_BACK, RendMode);
-glColor3f(0.0f, 0.0f, 1.0f);
-	for(i=0; i<obj->faces->n; i++)
-	{
-		glBegin(GL_POLYGON);
-		   	if(RendMode>1) {
-		   		calculaNormalFace(&(obj->faces->faceVertice[i]), obj->vertices); // computa normal da face
-				glNormal3fv(obj->faces->faceVertice[i].vNormal);
-		   	}
-			for(j=0; j<obj->faces->faceVertice[i].n; j++)
-			{
-				h = obj->faces->faceVertice[i].indice[j];
-				glVertex3fv(obj->vertices->vPoint[h]);
-			}
-		glEnd();	
-	}
-}  
-
-void initlights(void) 
-{
-  
-//   float position[] = {0.0, 0.0, 2.0, 1.0};
-
-   glLightfv(GL_LIGHT0, GL_AMBIENT, luz_ambiente);
-   glLightfv(GL_LIGHT0, GL_DIFFUSE, luz_difusa);
-   
-   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.3);
-   
-   // habilitar ilumicao
-   glEnable(GL_LIGHT0);
-   glEnable(GL_NORMALIZE);
-}
-
-static void init(void)
-{
    vrot_x = 0.0;
    vrot_y = 0.0;
    vrot_z = 1.0;
    
-   glClearColor(1.0, 1.0, 1.0, 0.0);
-   glEnable(GL_DEPTH_TEST);
-   glEnable(GL_MAP2_VERTEX_3);
-//   glEnable(GL_AUTO_NORMAL);
-   glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
- //  initlights();       /* for lighted version only */
-}
+ glClearColor(1.0, 1.0, 1.0, 0.0);
 
-void display(void)
-{
-    float luz_Posicao[] = {movLuz, 2, 3, 2};
-    glLightfv(GL_LIGHT0, GL_POSITION, luz_Posicao);
+// Setting up a point light source
+	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// Enabling lighting with the light source #1
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
 
-
-glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
-glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
-glMaterialfv(GL_FRONT, GL_SPECULAR, mat_especular);
-
-glMaterialfv(GL_FRONT, GL_SHININESS, mat_brilho);
-
-glEnable(GL_COLOR_MATERIAL);
-
-   glPushMatrix();
-   glRotatef(ang_rot, vrot_x, vrot_y, vrot_z);
-   DisenaObjeto(objeto);    // disenhando un objeto
-   glPopMatrix();
-
-   glutSwapBuffers();
+// enabling both side illumination for the polygons and hidden surface/line removal
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MAP2_VERTEX_3);
+  glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
 }
 
 
-void reshape(int w, int h)
+//============================================================
+static void reshape( int width, int height )
 {
-   glViewport(0, 0, w, h);    // area de visao
-   glClearColor(1, 1, 1, 1);  // fundo preto
-   
-   initlights(); 
-   
-   glMatrixMode(GL_PROJECTION); // matriz de projecao para ejecucao
-   glLoadIdentity();            // reinicia com identdade
-   if (w <= h)
-      glOrtho(-5.0, 5.0, -5.0*(GLfloat)h/(GLfloat)w,
-              5.0*(GLfloat)h/(GLfloat)w, -5.0, 5.0);  
-            // alto, baixo, frente, fundo, esquerda, direita
-   else
-      glOrtho(-5.0*(GLfloat)w/(GLfloat)h,
-              5.0*(GLfloat)w/(GLfloat)h, -5.0, 5.0, -5.0, 5.0);
 
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+// This function is called every time the window is to be resized or exposed
+    glViewport(0, 0, (GLint)width, (GLint)height);
+    glMatrixMode (GL_PROJECTION);	
+    glLoadIdentity ();
+    glFrustum(-3*SIZE, 3*SIZE, -3*SIZE, 3*SIZE, 3*SIZE, 40*SIZE);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity ();
 }
 
-void keyboard(int key, int x, int y)
+//============================================================
+void MakeShapes(void)
 {
-   ang_rot +=1.0; 
+// Geometric objects (axes and surfaces) are defined here. 
+// If the shaopes change in time, the time parameter controllling these changes can be
+// defined and changed in function draw()
 
-   switch (key) {
-	case GLUT_KEY_LEFT:
-		    vrot_x +=1.0;
-			break;
-	case GLUT_KEY_RIGHT:
-			vrot_x -=1.0;
-			break;
-	case GLUT_KEY_UP:
-			vrot_y +=1.0;
-			break;
-	case GLUT_KEY_DOWN:
-			vrot_y -=1.0;
-			break;
-    case 27:
-         exit(0);
-         break;
-	default:
-		break;
-   }
-   	glutPostRedisplay();
-}
+// Since the axes are to be drawn as solid lines, we disable lighting for them.
+   glDisable(GL_LIGHTING);
+   glBegin(GL_LINES);
+    glColor4f(1.0, 0.0, 0.0, 1.0);
+    glVertex3f(0.0,0.0,0.0);
+    glVertex3f(2*SIZE,0.0,0.0);
 
-un_objeto* liberaObjeto(un_objeto* obj)
-{
-	int i, j;
+    glColor4f(0.0, 1.0, 0.0, 1.0);
+    glVertex3f(0.0,0.0,0.0);
+    glVertex3f(0.0,2*SIZE,0.0);
 
-	if(obj)
-	{
-		if(obj->vertices)
-		{
-			if(obj->vertices->vPoint)
-				free(obj->vertices->vPoint);
-			free(obj->vertices);
-		}
-		if(obj->faces)
-		{
-			if(obj->faces->faceVertice)
-			{
-				for(j=0; j<objeto->faces->n; j++)
-					free(objeto->faces->faceVertice[j].indice);
+    glColor4f(0.0, 0.0, 1.0, 1.0);
+    glVertex3f(0.0,0.0,0.0);
+    glVertex3f(0.0,0.0,2*SIZE);
+	glEnd();
+	        
+// The polygons are rendered differently depending on the selected rendering modes:
+// which are wireframe, flat shading, and smooth shading.
+// Notice how the edges visually disappear when smooth rendering is selected.
+// Default material settings are used. You may define your own material properties.
 
-				free(obj->faces->faceVertice);
-			}
-			free(objeto->faces);
-		}
-
-		free(obj);
+	if (RendMode==1){
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
+		glColor4f(1.0, 1.0, 1.0, 1.0);
 	}
-	return NULL;
+	else {
+		glEnable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	}
+		  display();
+
 }
 
 int procSolido(char *arch)
@@ -349,25 +260,160 @@ void createGLUTMenus()
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-int main(int argc, char** argv)
+
+//============================================================
+static void draw( void )
 {
+  
+	glClearColor (0.0, 0.0, 0.2, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glPushMatrix();
+
+// Placement and rotation of the scene.
+	glTranslatef(0.0,0.0,-5*SIZE);
+	glRotatef(beta, 1.0, 0.0, 0.0);
+	glRotatef(alpha, 0.0, 1.0, 0.0);
+	MakeShapes();
+	glFlush();			         
+	glPopMatrix(); 
+
+// This command will swap animation buffers to display the current frame.
+    glutSwapBuffers();
+}
+
+//============================================================
+static void idle( void )
+{
+// This function will call draw() as frequent as possible thus enabling us to make 
+// interaction and animation.
+
+   draw();
+}
+
+//============================================================
+static void hotkey(unsigned char k, int x, int y)
+{
+// Here we are processing keyboard events.
+   switch (k) 
+   {
+      case 27:
+	  exit (0);
+	  break;
+
+// Switch to wireframe rendering
+	  case 'w':
+	  RendMode=1;
+      break;
+
+// Switch to flat shading
+	  case 'f':
+	  RendMode=2;
+	  glShadeModel(GL_FLAT);
+	  break;		  
+   }
+}
+
+//============================================================
+static void sfunc(int k, int x, int y)
+{
+// Here we can process function keys and other special key events
+   switch (k) 
+   {
+
+// Rotate to the left
+	  case GLUT_KEY_LEFT:
+	  alpha-=3.0;
+	  break;
+
+// Rotate to the right
+	  case GLUT_KEY_RIGHT:
+	  alpha+=3.0;
+	  break;
+   }
+}
+
+
+void calculaNormalFace(vector_int *fac, vector_f4d *vert)
+{
+	f4d a, b, vNorm;
+	float s;
+	int nn, io, ia, ib;
+
+	nn = fac->n - 1;
+	io = fac->indice[0];
+	ia = fac->indice[nn];
+	ib = fac->indice[1];
+
+	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
+	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
+	a[2] = vert->vPoint[ia][2] - vert->vPoint[io][2];
+
+	b[0] = vert->vPoint[ib][0] - vert->vPoint[io][0];
+	b[1] = vert->vPoint[ib][1] - vert->vPoint[io][1];
+	b[2] = vert->vPoint[ib][2] - vert->vPoint[io][2];
+	
+	vNorm[0] = a[1]*b[2] - a[2]*b[1];
+	vNorm[1] = a[2]*b[0] - a[0]*b[2];
+	vNorm[2] = a[0]*b[1] - a[1]*b[0];
+
+	s = sqrt(vNorm[0]*vNorm[0]+vNorm[1]*vNorm[1]+vNorm[2]*vNorm[2]);
+
+	fac->vNormal[0] = vNorm[0] / s;
+	fac->vNormal[1] = vNorm[1] / s;
+	fac->vNormal[2] = vNorm[2] / s;
+}
+
+
+void DisenaObjeto(un_objeto *obj)
+{
+	int i, j, h;
+
+	if(!obj)
+		return;
+
+	glPolygonMode(GL_FRONT_AND_BACK, RendMode);
+glColor3f(0.0f, 0.0f, 1.0f);
+	for(i=0; i<obj->faces->n; i++)
+	{
+		glBegin(GL_POLYGON);
+		   	if(RendMode>1) {
+		   		calculaNormalFace(&(obj->faces->faceVertice[i]), obj->vertices); // computa normal da face
+				glNormal3fv(obj->faces->faceVertice[i].vNormal);
+		   	}
+			for(j=0; j<obj->faces->faceVertice[i].n; j++)
+			{
+				h = obj->faces->faceVertice[i].indice[j];
+				glVertex3fv(obj->vertices->vPoint[h]);
+			}
+		glEnd();	
+	}
+}  
+
+
+//============================================================
+void main( int argc, char *argv[] )
+{
+
+// This is the main program where glut functions are invoked to set up 
+// the graphics window as well as to define the callback functions.
    glutInit(&argc, argv);
+   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+   glutInitWindowSize (650, 650); 
+   glutInitWindowPosition (100, 100);
+   glutCreateWindow ("Sample OpenGL program.          \
+   Use  -->,  <--,  <f>,  and  <Esc> keys.");
 
-   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-   
-   glutInitWindowPosition(100, 100);    // posicao da janela na tela
-   glutInitWindowSize(650, 650);      // tamanho da janela (horiznotal e vertical)
-   
-   glutCreateWindow("Objetos 3D BREP - vertices e faces");
+   Init();
+   glutReshapeFunc(reshape);
+   glutIdleFunc(idle);
+   glutDisplayFunc(draw);
+   glutKeyboardFunc(hotkey);
+   glutSpecialFunc(sfunc);
 
-   init();
-   
-   glutDisplayFunc(display);   // funcao de mostrar objetos
-   glutReshapeFunc(reshape);   // funcao de variacao de janela
+   createGLUTMenus(); 
 
-   glutSpecialFunc(keyboard);
+// Refer to GLUT manual on how to set up and use pop-up menus.
 
-   createGLUTMenus();  
+// The main event loop is started here.
    glutMainLoop();
-   return 0;
 }
