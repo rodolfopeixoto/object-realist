@@ -76,6 +76,7 @@ GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 //============================================================
 static void Init(void)
 {
+  display(void);
 // This function is called only once before any other functions are called
 	alpha=-20.0;
 	beta=20.0;
@@ -157,6 +158,37 @@ void MakeShapes(void)
 		  display();
 
 }
+
+
+un_objeto* liberaObjeto(un_objeto* obj)
+{
+	int i, j;
+
+	if(obj)
+	{
+		if(obj->vertices)
+		{
+			if(obj->vertices->vPoint)
+				free(obj->vertices->vPoint);
+			free(obj->vertices);
+		}
+		if(obj->faces)
+		{
+			if(obj->faces->faceVertice)
+			{
+				for(j=0; j<objeto->faces->n; j++)
+					free(objeto->faces->faceVertice[j].indice);
+
+				free(obj->faces->faceVertice);
+			}
+			free(objeto->faces);
+		}
+
+		free(obj);
+	}
+	return NULL;
+}
+
 
 int procSolido(char *arch)
 {
