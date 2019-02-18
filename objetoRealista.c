@@ -76,7 +76,6 @@ GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 //============================================================
 static void Init(void)
 {
-  void display(void);
 // This function is called only once before any other functions are called
 	alpha=-20.0;
 	beta=20.0;
@@ -155,7 +154,8 @@ void MakeShapes(void)
 		glEnable(GL_LIGHTING);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	}
-		  display();
+		  
+  display(void);
 
 }
 
