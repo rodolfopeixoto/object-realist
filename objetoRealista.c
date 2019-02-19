@@ -90,7 +90,7 @@ static void Init(void)
  settingUpPointLight();
 
 // Enabling lighting with the light source #1
-  enableLight(void);
+  enableLight();
 
 // enabling both side illumination for the polygons and hidden surface/line removal
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
