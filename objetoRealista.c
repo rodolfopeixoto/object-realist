@@ -12,7 +12,7 @@
 
 // The unit size used in this application's World Coordinate System. 
 // All other dimensions and parameters are made proportional to it.
-#define	SIZE	10.0
+#define	SIZE	40.0
 
 
 int RendMode = GL_LINE;
@@ -434,7 +434,7 @@ void main( int argc, char *argv[] )
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
    glutInitWindowSize (650, 650); 
-   glutInitWindowPosition (40, 40);
+   glutInitWindowPosition (100, 100);
    glutCreateWindow ("Sample OpenGL program.          \
    Use  -->,  <--,  <f>,  and  <Esc> keys.");
 
