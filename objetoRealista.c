@@ -12,7 +12,7 @@
 
 // The unit size used in this application's World Coordinate System. 
 // All other dimensions and parameters are made proportional to it.
-#define	SIZE	4.0
+#define	SIZE	10.0
 
 
 int RendMode = GL_LINE;
@@ -407,7 +407,7 @@ void DisenaObjeto(un_objeto *obj)
 		return;
 
 	glPolygonMode(GL_FRONT_AND_BACK, RendMode);
-glColor3f(0.0f, 0.0f, 1.0f);
+glColor3f(0.9f, 1.0f, 0.1f);
 	for(i=0; i<obj->faces->n; i++)
 	{
 		glBegin(GL_POLYGON);
@@ -434,7 +434,7 @@ void main( int argc, char *argv[] )
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
    glutInitWindowSize (650, 650); 
-   glutInitWindowPosition (300, 300);
+   glutInitWindowPosition (100, 100);
    glutCreateWindow ("Sample OpenGL program.          \
    Use  -->,  <--,  <f>,  and  <Esc> keys.");
 
