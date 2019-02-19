@@ -86,26 +86,31 @@ static void Init(void)
    vrot_y = 0.0;
    vrot_z = 1.0;
    
- glClearColor(1.0, 1.0, 1.0, 0.0);
 
-// Setting up a point light source
-	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+ settingUpPointLight();
 
 // Enabling lighting with the light source #1
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT1);
+  enableLight(void);
 
 // enabling both side illumination for the polygons and hidden surface/line removal
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MAP2_VERTEX_3);
   glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
-  void CreateLineXYZ();
+  CreateLineXYZ();
 }
 
+void enableLight(void){
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
+}
+
+void settingUpPointLight(void){
+	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+}
 
 //============================================================
 static void reshape( int width, int height )
