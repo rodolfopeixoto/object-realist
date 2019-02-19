@@ -19,7 +19,7 @@ int RendMode = GL_LINE;
 double alpha, beta;
 float ang_rot = 05.0; 
 float vrot_x, vrot_y, vrot_z; 
-float local_scale = 0.12f;
+float local_scale = 1.0f;
 typedef float f4d[4];
 
 
