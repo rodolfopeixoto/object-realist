@@ -121,41 +121,43 @@ static void reshape( int width, int height )
 //============================================================
 void MakeShapes(void)
 {
-// Geometric objects (axes and surfaces) are defined here. 
-// If the shaopes change in time, the time parameter controllling these changes can be
-// defined and changed in function draw()
+  
+    float luz_Posicao[] = {movLuz, 2, 3, 2};
+    glLightfv(GL_LIGHT0, GL_POSITION, luz_Posicao);
 
-// Since the axes are to be drawn as solid lines, we disable lighting for them.
-   glDisable(GL_LIGHTING);
-   glBegin(GL_LINES);
-    glColor4f(1.0, 0.0, 0.0, 1.0);
-    glVertex3f(0.0,0.0,0.0);
-    glVertex3f(2*SIZE,0.0,0.0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glColor4f(0.0, 1.0, 0.0, 1.0);
-    glVertex3f(0.0,0.0,0.0);
-    glVertex3f(0.0,2*SIZE,0.0);
 
-    glColor4f(0.0, 0.0, 1.0, 1.0);
-    glVertex3f(0.0,0.0,0.0);
-    glVertex3f(0.0,0.0,2*SIZE);
+	glBegin(GL_LINES);
+
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(2*SIZE,0.0,0.0);
+
+	glColor4f(0.0, 1.0, 0.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,2*SIZE,0.0);
+
+	glColor4f(0.0, 0.0, 1.0, 1.0);
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,0.0,2*SIZE);
+	      
 	glEnd();
-	        
-// The polygons are rendered differently depending on the selected rendering modes:
-// which are wireframe, flat shading, and smooth shading.
-// Notice how the edges visually disappear when smooth rendering is selected.
-// Default material settings are used. You may define your own material properties.
 
-	if (RendMode==1){
-		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
-	else {
-		glEnable(GL_LIGHTING);
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	}
-		  
-  display();
+glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
+glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
+glMaterialfv(GL_FRONT, GL_SPECULAR, mat_especular);
+
+glMaterialfv(GL_FRONT, GL_SHININESS, mat_brilho);
+
+glEnable(GL_COLOR_MATERIAL);
+
+   glPushMatrix();
+   glRotatef(ang_rot, vrot_x, vrot_y, vrot_z);
+   DisenaObjeto(objeto);    // disenhando un objeto
+   glPopMatrix();
+
+   glutSwapBuffers();
 
 }
 
