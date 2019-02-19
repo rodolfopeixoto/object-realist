@@ -434,7 +434,7 @@ void main( int argc, char *argv[] )
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
    glutInitWindowSize (650, 650); 
-   glutInitWindowPosition (10, 10);
+   glutInitWindowPosition (-40, -40);
    glutCreateWindow ("Sample OpenGL program.          \
    Use  -->,  <--,  <f>,  and  <Esc> keys.");
 
