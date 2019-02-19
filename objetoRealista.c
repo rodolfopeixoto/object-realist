@@ -407,7 +407,7 @@ void DisenaObjeto(un_objeto *obj)
 		return;
 
 	glPolygonMode(GL_FRONT_AND_BACK, RendMode);
-glColor3f(0.9f, 1.0f, 0.1f);
+glColor3f(0.9f, 1.0f, 0.1f); // troca cor
 	for(i=0; i<obj->faces->n; i++)
 	{
 		glBegin(GL_POLYGON);
@@ -432,7 +432,7 @@ void main( int argc, char *argv[] )
 // This is the main program where glut functions are invoked to set up 
 // the graphics window as well as to define the callback functions.
    glutInit(&argc, argv);
-   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA );
    glutInitWindowSize (650, 650); 
    glutInitWindowPosition (100, 100);
    glutCreateWindow ("Sample OpenGL program.          \
