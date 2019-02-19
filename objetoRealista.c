@@ -12,7 +12,7 @@
 
 // The unit size used in this application's World Coordinate System. 
 // All other dimensions and parameters are made proportional to it.
-#define	SIZE	40.0
+#define	SIZE	-10.0
 
 
 int RendMode = GL_LINE;
