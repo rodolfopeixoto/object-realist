@@ -133,15 +133,15 @@ void MakeShapes(void)
 
 	glColor4f(1.0, 0.0, 0.0, 1.0);
 	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(2*SIZE,0.0,0.0);
+	glVertex3f(1*SIZE,0.0,0.0);
 
 	glColor4f(0.0, 1.0, 0.0, 1.0);
 	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,2*SIZE,0.0);
+	glVertex3f(0.0,1*SIZE,0.0);
 
 	glColor4f(0.0, 0.0, 1.0, 1.0);
 	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,0.0,2*SIZE);
+	glVertex3f(0.0,0.0,1*SIZE);
 	      
 	glEnd();
 
@@ -432,7 +432,7 @@ void main( int argc, char *argv[] )
 // This is the main program where glut functions are invoked to set up 
 // the graphics window as well as to define the callback functions.
    glutInit(&argc, argv);
-   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA );
+   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
    glutInitWindowSize (650, 650); 
    glutInitWindowPosition (100, 100);
    glutCreateWindow ("Sample OpenGL program.          \
