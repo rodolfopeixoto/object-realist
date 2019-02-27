@@ -7,9 +7,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glut.h>
 #include <math.h>
+#ifdef __APPLE__
+#  include <GLUT/glut.h>
+#else
+#  include <GL/gl.h>
+#  include <GL/glu.h>
+#  include <GL/glut.h>
+#endif
 
+#define GL_SILENCE_DEPRECATION
 // The unit size used in this application's World Coordinate System. 
 // All other dimensions and parameters are made proportional to it.
 #define	SIZE	10.0
@@ -47,6 +54,8 @@ typedef struct st_un_objeto
 {
 	vector_f4d *vertices;		// vector de vertices
 	vector_faces *faces;		// vector de faces
+  f4d *color;
+  f4d *position;
 } un_objeto;
 
 typedef struct st_objetos
@@ -58,6 +67,14 @@ typedef struct st_objetos
 // ===========================================
 
 un_objeto *objeto = NULL;		// un objeto
+
+
+
+/*function declaration*/
+void DisenaObjeto();
+void CreateLineXYZ(void);
+void settingUpPointLight(void);
+void enableLight(void);
 
 // ===========================================
    // propriedades material
