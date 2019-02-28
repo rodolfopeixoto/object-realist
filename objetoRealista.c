@@ -71,14 +71,6 @@ stObjetos *objetos = NULL;		// un objeto
 // ===========================================
 
 
-
-/*function declaration*/
-void DisenaObjeto();
-void CreateLineXYZ(void);
-void settingUpPointLight(void);
-void enableLight(void);
-void SelectForm();
-
 // ===========================================
    // propriedades material
 float mat_ambiente[] = {0.3, 0.0, 0.0, 1.0};
@@ -137,54 +129,61 @@ static void reshape( int width, int height )
     glLoadIdentity ();
 }
 
-//============================================================
-void MakeShapes(void)
-{
-  CreateLineXYZ();
-  SelectForm();
 
+void calculaNormalFace(vector_int *fac, vector_f4d *vert)
+{
+	f4d a, b, vNorm;
+	float s;
+	int nn, io, ia, ib;
+
+	nn = fac->n - 1;
+	io = fac->indice[0];
+	ia = fac->indice[nn];
+	ib = fac->indice[1];
+
+	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
+	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
+	a[2] = vert->vPoint[ia][2] - vert->vPoint[io][2];
+
+	b[0] = vert->vPoint[ib][0] - vert->vPoint[io][0];
+	b[1] = vert->vPoint[ib][1] - vert->vPoint[io][1];
+	b[2] = vert->vPoint[ib][2] - vert->vPoint[io][2];
+	
+	vNorm[0] = a[1]*b[2] - a[2]*b[1];
+	vNorm[1] = a[2]*b[0] - a[0]*b[2];
+	vNorm[2] = a[0]*b[1] - a[1]*b[0];
+
+	s = sqrt(vNorm[0]*vNorm[0]+vNorm[1]*vNorm[1]+vNorm[2]*vNorm[2]);
+
+	fac->vNormal[0] = vNorm[0] / s;
+	fac->vNormal[1] = vNorm[1] / s;
+	fac->vNormal[2] = vNorm[2] / s;
 }
 
-void SelectForm()
-{
-	if (RendMode==1){
-		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
-	else {
-		glEnable(GL_LIGHTING);
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	}
-}
 
-un_objeto* liberaObjeto(un_objeto* obj)
+void DesenhaObjeto(un_objeto *obj)
 {
-	int i, j;
+	int i, j, h;
 
-	if(obj)
+	if(!obj)
+		return;
+
+	for(i=0; i<obj->faces->n; i++)
 	{
-		if(obj->vertices)
-		{
-			if(obj->vertices->vPoint)
-				free(obj->vertices->vPoint);
-			free(obj->vertices);
-		}
-		if(obj->faces)
-		{
-			if(obj->faces->faceVertice)
+		glBegin(GL_POLYGON);
+		   	if(RendMode>1) {
+		   		calculaNormalFace(&(obj->faces->faceVertice[i]), obj->vertices); // computa normal da face
+				glNormal3fv(obj->faces->faceVertice[i].vNormal);
+		   	}
+			for(j=0; j<obj->faces->faceVertice[i].n; j++)
 			{
-				for(j=0; j<objeto->faces->n; j++)
-					free(objeto->faces->faceVertice[j].indice);
-
-				free(obj->faces->faceVertice);
+				h = obj->faces->faceVertice[i].indice[j];
+				glVertex3fv(obj->vertices->vPoint[h]);
 			}
-			free(objeto->faces);
-		}
-
-		free(obj);
+		glEnd();	
 	}
-	return NULL;
-}
+}  
+
 
 void CreateLineXYZ(void)
 {
@@ -206,12 +205,76 @@ void CreateLineXYZ(void)
 }
 
 
+void SelectForm()
+{
+	if (RendMode==1){
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	}
+	else {
+		glEnable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	}
+}
+
+
+//============================================================
+void MakeShapes(void)
+{
+  CreateLineXYZ();
+  SelectForm();
+
+}
+
+un_objeto* liberaObjeto(un_objeto* obj)
+{
+	int i, j;
+
+	if(obj)
+	{
+		if(obj->vertices)
+		{
+			if(obj->vertices->vPoint)
+				free(obj->vertices->vPoint);
+			free(obj->vertices);
+		}
+		if(obj->faces)
+		{
+			if(obj->faces->faceVertice)
+			{
+				for(j=0; j<obj->faces->n; j++)
+					free(obj->faces->faceVertice[j].indice);
+
+				free(obj->faces->faceVertice);
+			}
+			free(obj->faces);
+		}
+
+		free(obj);
+	}
+	return NULL;
+}
+
+stObjetos  *liberaObjetos(stObjetos* objetos){
+	int i;
+	for(i=0; i<objetos->n; i++){
+		liberaObjeto(objetos->objs[i]);
+		objetos->objs[i] = NULL;
+	}
+	free(objetos->objs);
+	free(objetos);
+
+	return NULL;
+}
+
+
 un_objeto *procSolido(char *arch)
 {
   FILE *fobj;
   char token[40];
   float px, py, pz;
   int i, j, n, m;
+  un_objeto *objeto;
 
   printf(" \n ler  %s  \n", arch);
 
@@ -238,9 +301,9 @@ un_objeto *procSolido(char *arch)
   {
 	 fscanf(fobj, "%s %f %f %f", token, &px, &py, &pz);
 	 
-     objeto->vertices->vPoint[j][0] = px * local_escala;     
-     objeto->vertices->vPoint[j][1] = py * local_escala;
-     objeto->vertices->vPoint[j][2] = pz * local_escala;     
+     objeto->vertices->vPoint[j][0] = px * local_scale;     
+     objeto->vertices->vPoint[j][1] = py * local_scale;
+     objeto->vertices->vPoint[j][2] = pz * local_scale;     
 	   objeto->vertices->vPoint[j][3] = 0.0f;
   }
 
@@ -380,11 +443,11 @@ static void draw( void )
 
 	if(objetos)
 	for(index=0; index<objetos->n; index++){
-		glTranslatef(objetos->obj[index]->position[0], objetos->obj[index]->position[1], objetos->obj[index]->position[2]);
+		glTranslatef(objetos->objs[index]->posicao[0], objetos->objs[index]->posicao[1], objetos->objs[index]->posicao[2]);
 		glRotatef(beta, 1.0, 0.0, 0.0);
 		glRotatef(alpha, 0.0, 1.0, 0.0);
 		MakeShapes();
-		DisenaObjeto(objetos->obs[i]);
+		DesenhaObjeto(objetos->objs[index]);
  		
 	}
 
@@ -456,60 +519,6 @@ static void sfunc(int k, int x, int y)
    glutSwapBuffers();
 }
 
-
-void calculaNormalFace(vector_int *fac, vector_f4d *vert)
-{
-	f4d a, b, vNorm;
-	float s;
-	int nn, io, ia, ib;
-
-	nn = fac->n - 1;
-	io = fac->indice[0];
-	ia = fac->indice[nn];
-	ib = fac->indice[1];
-
-	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
-	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
-	a[2] = vert->vPoint[ia][2] - vert->vPoint[io][2];
-
-	b[0] = vert->vPoint[ib][0] - vert->vPoint[io][0];
-	b[1] = vert->vPoint[ib][1] - vert->vPoint[io][1];
-	b[2] = vert->vPoint[ib][2] - vert->vPoint[io][2];
-	
-	vNorm[0] = a[1]*b[2] - a[2]*b[1];
-	vNorm[1] = a[2]*b[0] - a[0]*b[2];
-	vNorm[2] = a[0]*b[1] - a[1]*b[0];
-
-	s = sqrt(vNorm[0]*vNorm[0]+vNorm[1]*vNorm[1]+vNorm[2]*vNorm[2]);
-
-	fac->vNormal[0] = vNorm[0] / s;
-	fac->vNormal[1] = vNorm[1] / s;
-	fac->vNormal[2] = vNorm[2] / s;
-}
-
-
-void DisenaObjeto(un_objeto *obj)
-{
-	int i, j, h;
-
-	if(!obj)
-		return;
-
-	for(i=0; i<obj->faces->n; i++)
-	{
-		glBegin(GL_POLYGON);
-		   	if(RendMode>1) {
-		   		calculaNormalFace(&(obj->faces->faceVertice[i]), obj->vertices); // computa normal da face
-				glNormal3fv(obj->faces->faceVertice[i].vNormal);
-		   	}
-			for(j=0; j<obj->faces->faceVertice[i].n; j++)
-			{
-				h = obj->faces->faceVertice[i].indice[j];
-				glVertex3fv(obj->vertices->vPoint[h]);
-			}
-		glEnd();	
-	}
-}  
 
 
 //============================================================
