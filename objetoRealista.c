@@ -86,6 +86,18 @@ GLfloat light_diffuse[]   = {   1.0,   1.0,   1.0, 1.0 };
 GLfloat light_specular[]  = {   1.0,   1.0,   1.0, 1.0 };
 float movLuz = 10.0;   // angulo inicial da luz
 
+void enableLight(void){
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
+}
+
+void settingUpPointLight(void){
+	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+}
+
 //============================================================
 static void Init(void)
 {
@@ -104,17 +116,6 @@ static void Init(void)
   glEnable(GL_DEPTH_TEST);
 }
 
-void enableLight(void){
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT1);
-}
-
-void settingUpPointLight(void){
-	glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-}
 
 //============================================================
 static void reshape( int width, int height )
@@ -138,8 +139,8 @@ void calculaNormalFace(vector_int *fac, vector_f4d *vert)
 
 	nn = fac->n - 1;
 	io = fac->indice[0];
-	ia = fac->indice[nn];
-	ib = fac->indice[1];
+	ib = fac->indice[nn];
+	ia = fac->indice[1];
 
 	a[0] = vert->vPoint[ia][0] - vert->vPoint[io][0];
 	a[1] = vert->vPoint[ia][1] - vert->vPoint[io][1];
@@ -327,6 +328,7 @@ un_objeto *procSolido(char *arch)
   }
 
   fclose(fobj);
+	
   return objeto;
 }
 
@@ -390,7 +392,7 @@ int setUpObject(char *arch)
   	objetos->objs[i]->orientacao[3] = 0.0;
 
   	fscanf(fobj, "%s %f", token, &d);
-  	objetos->objs[i]-> escala - d;
+  	objetos->objs[i]->escala = d;
   }
    printf(" \n fechando arquivo varios ");
   fclose(fobj);
@@ -399,11 +401,11 @@ int setUpObject(char *arch)
 void processMenuEvents(int option) 
 {
 	if (option == 1)
-		setUpObject("data/dadosObjPlanar.txt");
+		setUpObject("data/information1.txt");
 	else if (option == 2)
-		setUpObject("data/dadosObj1.txt");
+		setUpObject("data/information2.txt");
 	else if(option == 3)
-		setUpObject("data/dadosObjetos2");
+		setUpObject("data/ObjectStruct.txt");
 
 	glutPostRedisplay();
 }
