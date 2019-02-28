@@ -131,6 +131,7 @@ static void reshape( int width, int height )
 }
 
 
+//============================================================
 void calculaNormalFace(vector_int *fac, vector_f4d *vert)
 {
 	f4d a, b, vNorm;
@@ -161,13 +162,26 @@ void calculaNormalFace(vector_int *fac, vector_f4d *vert)
 	fac->vNormal[2] = vNorm[2] / s;
 }
 
-
 void DesenhaObjeto(un_objeto *obj)
 {
+
 	int i, j, h;
 
 	if(!obj)
 		return;
+
+	//glPolygonMode(GL_FRONT_AND_BACK, RendMode);
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	if (RendMode==1){
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
+		glColor4f(obj->cor[0],obj->cor[1],obj->cor[2],obj->cor[3]);
+	}
+	else {
+		glEnable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glColor4f(obj->cor[0],obj->cor[1],obj->cor[2],obj->cor[3]);
+	}
+	
 
 	for(i=0; i<obj->faces->n; i++)
 	{
@@ -183,8 +197,9 @@ void DesenhaObjeto(un_objeto *obj)
 			}
 		glEnd();	
 	}
-}  
 
+
+}
 
 void CreateLineXYZ(void)
 {
@@ -268,7 +283,6 @@ stObjetos  *liberaObjetos(stObjetos* objetos){
 	return NULL;
 }
 
-
 un_objeto *procSolido(char *arch)
 {
   FILE *fobj;
@@ -284,6 +298,8 @@ un_objeto *procSolido(char *arch)
      printf("Error en la apertura del archivo %s \n", arch);
      return 0; 
   }
+   
+  //if (objeto) objeto = liberaObjeto(objeto);
 
   if((objeto = (un_objeto*) malloc(sizeof(un_objeto)))==NULL)
   {
@@ -305,7 +321,7 @@ un_objeto *procSolido(char *arch)
      objeto->vertices->vPoint[j][0] = px * local_scale;     
      objeto->vertices->vPoint[j][1] = py * local_scale;
      objeto->vertices->vPoint[j][2] = pz * local_scale;     
-	   objeto->vertices->vPoint[j][3] = 0.0f;
+	 objeto->vertices->vPoint[j][3] = 0.0f;
   }
 
   fscanf(fobj,"%s %i", token, &n);
@@ -328,7 +344,6 @@ un_objeto *procSolido(char *arch)
   }
 
   fclose(fobj);
-	
   return objeto;
 }
 
@@ -337,7 +352,7 @@ int setUpObject(char *arch)
   FILE *fobj;
   char token[40], Arquivo[40];
   int i, n;
-  float x, y, z, d;
+  float x, y, z, d, s;
 
   printf(" \n ler  %s  \n", arch);
 
@@ -355,48 +370,44 @@ int setUpObject(char *arch)
 		return 0;
   }
 
-   printf(" \n defina objetos ");
-
   fgets(token, 40, fobj);
 
   fscanf (fobj, "%s %d", token, &n);
 
   objetos->objs = (un_objeto**) malloc(n*sizeof(un_objeto*));
   objetos->n = n;
-  printf("\n n: %d", n);
-   printf(" \n antes do for ");
+    
   for(i=0; i<objetos->n; i++){
   	fscanf(fobj, "%s %s", token, Arquivo);
-  	printf(" \n arquivo %s", Arquivo);
   	objetos->objs[i] = procSolido(Arquivo);
 
   	fscanf(fobj, "%s %f %f %f %f", token, &x, &y, &z, &d);
-  	printf("\n cor: %f %f %f %f", x, y, z, d);
   	objetos->objs[i]->cor[0] = x;
   	objetos->objs[i]->cor[1] = y;
   	objetos->objs[i]->cor[2] = z;
   	objetos->objs[i]->cor[3] = d;
 
   	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
-  	printf("\n posicao: %f, %f, %f", x, y, z);
   	objetos->objs[i]->posicao[0] = x;
   	objetos->objs[i]->posicao[1] = y;
   	objetos->objs[i]->posicao[2] = z;
   	objetos->objs[i]->posicao[3] = 0.0;
 
   	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
-  	printf("\n orientacao: %f, %f, %f", x, y, z);
   	objetos->objs[i]->orientacao[0] = x;
   	objetos->objs[i]->orientacao[1] = y;
   	objetos->objs[i]->orientacao[2] = z;
   	objetos->objs[i]->orientacao[3] = 0.0;
 
-  	fscanf(fobj, "%s %f", token, &d);
-  	objetos->objs[i]->escala = d;
+  	fscanf(fobj, "%s %f", token, &s);
+  	objetos->objs[i]->escala = s;
   }
-   printf(" \n fechando arquivo varios ");
+   
   fclose(fobj);
+  return 1;
+
 }
+
 
 void processMenuEvents(int option) 
 {
@@ -488,6 +499,7 @@ static void hotkey(unsigned char k, int x, int y)
 	  glShadeModel(GL_FLAT);
 	  break;		  
    }
+   glutPostRedisplay();
 }
 
 //============================================================
@@ -518,7 +530,7 @@ static void sfunc(int k, int x, int y)
 	  alpha+=3.0;
 	  break;
    }
-   glutSwapBuffers();
+   glutPostRedisplay();
 }
 
 
@@ -549,6 +561,4 @@ int main( int argc, char *argv[] )
 
 // The main event loop is started here.
    glutMainLoop();
-
-	 return 0;
 }
