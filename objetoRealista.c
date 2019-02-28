@@ -26,7 +26,7 @@ int RendMode = GL_LINE;
 double alpha, beta;
 float ang_rot = 05.0; 
 float vrot_x, vrot_y, vrot_z; 
-float local_scale = 0.9f;
+float local_escala = 0.9f;
 typedef float f4d[4];
 
 
@@ -56,12 +56,14 @@ typedef struct st_un_objeto
 	vector_faces *faces;		// vector de faces
   f4d *color;
   f4d *position;
+	f4d *orientation;
+	float escala;
 } un_objeto;
 
 typedef struct st_objetos
 {
 	int n;                      // numero de objetos
-	un_objeto *obs;
+	un_objeto **obs;
 } objetos;                      // n objetos
 
 // ===========================================
@@ -75,6 +77,7 @@ void DisenaObjeto();
 void CreateLineXYZ(void);
 void settingUpPointLight(void);
 void enableLight(void);
+void SelectForm();
 
 // ===========================================
    // propriedades material
@@ -112,9 +115,6 @@ static void Init(void)
 // enabling both side illumination for the polygons and hidden surface/line removal
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_MAP2_VERTEX_3);
-  glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
-  CreateLineXYZ();
 }
 
 void enableLight(void){
@@ -145,31 +145,22 @@ static void reshape( int width, int height )
 //============================================================
 void MakeShapes(void)
 {
-  
-    float luz_Posicao[] = {movLuz, 2, 3, 2};
-    glLightfv(GL_LIGHT0, GL_POSITION, luz_Posicao);
-
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   CreateLineXYZ();
-
-glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambiente);
-glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_difuso);
-glMaterialfv(GL_FRONT, GL_SPECULAR, mat_especular);
-
-glMaterialfv(GL_FRONT, GL_SHININESS, mat_brilho);
-
-glEnable(GL_COLOR_MATERIAL);
-
-   glPushMatrix();
-   glRotatef(ang_rot, vrot_x, vrot_y, vrot_z);
-   DisenaObjeto(objeto);    // disenhando un objeto
-   glPopMatrix();
-
-   glutSwapBuffers();
+  SelectForm();
 
 }
 
+void SelectForm()
+{
+	if (RendMode==1){
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);	
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	}
+	else {
+		glEnable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	}
+}
 
 un_objeto* liberaObjeto(un_objeto* obj)
 {
@@ -203,6 +194,7 @@ un_objeto* liberaObjeto(un_objeto* obj)
 void CreateLineXYZ(void)
 {
 
+	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
     glColor4f(1.0, 0.0, 0.0, 1.0);
     glVertex3f(0.0,0.0,0.0);
@@ -219,7 +211,7 @@ void CreateLineXYZ(void)
 }
 
 
-int procSolido(char *arch)
+un_objeto *procSolido(char *arch)
 {
   FILE *fobj;
   char token[40];
@@ -233,8 +225,6 @@ int procSolido(char *arch)
      printf("Error en la apertura del archivo %s \n", arch);
      return 0; 
   }
-   
-  if (objeto) objeto = liberaObjeto(objeto);
 
   if((objeto = (un_objeto*) malloc(sizeof(un_objeto)))==NULL)
   {
@@ -253,10 +243,10 @@ int procSolido(char *arch)
   {
 	 fscanf(fobj, "%s %f %f %f", token, &px, &py, &pz);
 	 
-     objeto->vertices->vPoint[j][0] = px * local_scale;     
-     objeto->vertices->vPoint[j][1] = py * local_scale;
-     objeto->vertices->vPoint[j][2] = pz * local_scale;     
-	 objeto->vertices->vPoint[j][3] = 0.0f;
+     objeto->vertices->vPoint[j][0] = px * local_escala;     
+     objeto->vertices->vPoint[j][1] = py * local_escala;
+     objeto->vertices->vPoint[j][2] = pz * local_escala;     
+	   objeto->vertices->vPoint[j][3] = 0.0f;
   }
 
   fscanf(fobj,"%s %i", token, &n);
@@ -279,26 +269,87 @@ int procSolido(char *arch)
   }
 
   fclose(fobj);
-  return 1;
+  return objeto;
+}
+
+int setUpObject(char *arch)
+{	
+  FILE *fobj;
+  char token[40], Arquivo[40];
+  int i, n;
+  float x, y, z, d;
+
+  printf(" \n ler  %s  \n", arch);
+
+  if((fobj=fopen(arch,"rt"))==NULL)
+  {
+     printf("Error en la apertura del archivo %s \n", arch);
+     return 0; 
+  }
+   
+  if (objeto) objeto = liberaObjeto(objeto);
+
+  if((objeto = (un_objeto*) malloc(sizeof(un_objeto)))==NULL)
+  {
+		printf("\n Error en alocacion de memoria para un_objeto");
+		return 0;
+  }
+
+   printf(" \n defina objetos ");
+
+  fgets(token, 40, fobj);
+
+  fscanf (fobj, "%s %d", token, &n);
+
+  objeto->obs = (un_objeto**) malloc(n*sizeof(un_objeto*));
+  objeto->n = n;
+  printf("\n n: %d", n);
+   printf(" \n antes do for ");
+  for(i=0; i<objeto->n; i++){
+  	fscanf(fobj, "%s %s", token, Arquivo);
+  	printf(" \n arquivo %s", Arquivo);
+  	objeto->obs[i] = procSolido(Arquivo);
+
+  	fscanf(fobj, "%s %f %f %f %f", token, &x, &y, &z, &d);
+  	printf("\n color: %f %f %f %f", x, y, z, d);
+  	objeto->obs[i]->color[0] = x;
+  	objeto->obs[i]->color[1] = y;
+  	objeto->obs[i]->color[2] = z;
+  	objeto->obs[i]->color[3] = d;
+
+  	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
+  	printf("\n position: %f, %f, %f", x, y, z);
+  	objeto->obs[i]->position[0] = x;
+  	objeto->obs[i]->position[1] = y;
+  	objeto->obs[i]->position[2] = z;
+  	objeto->obs[i]->position[3] = 0.0;
+
+  	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
+  	printf("\n orientation: %f, %f, %f", x, y, z);
+  	objeto->obs[i]->orientation[0] = x;
+  	objeto->obs[i]->orientation[1] = y;
+  	objeto->obs[i]->orientation[2] = z;
+  	objeto->obs[i]->orientation[3] = 0.0;
+
+  	fscanf(fobj, "%s %f", token, &d);
+  	objeto->obs[i]-> escala - d;
+  }
+   printf(" \n fechando arquivo varios ");
+  fclose(fobj);
 }
 
 void processMenuEvents(int option) 
 {
 	if (option == 1)
-		procSolido("data/dadosObjPlanar.txt");
+		setUpObject("data/dadosObjPlanar.txt");
 	else if (option == 2)
-		procSolido("data/dadosObj1.txt");
+		setUpObject("data/dadosObj1.txt");
 	else if(option == 3)
-		RendMode = GL_LINE;
-	else if (option == 4)
-		RendMode = GL_FILL;
-	else if (option == 5)
-		procSolido("data/dadosObjPlanar2.txt");
-	else if (option == 6)
-		procSolido("data/dadosObj2.txt");
+		setUpObject("data/dadosObjetos2");
 
 	glutPostRedisplay();
 }
+
 
 void createGLUTMenus() 
 {
@@ -306,9 +357,8 @@ void createGLUTMenus()
 	
 	submenu1 = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("Objeto aberto 1",1);
-	glutAddMenuEntry("Objeto Fechado 1",2);
-	glutAddMenuEntry("Objeto aberto 2",5);
-	glutAddMenuEntry("Objeto Fechado 2",6);
+	glutAddMenuEntry("Objeto aberto 2",2);
+	glutAddMenuEntry("Objeto 1 e 2",3);
 
 	submenu2 = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("Aramado",3);
@@ -325,21 +375,27 @@ void createGLUTMenus()
 //============================================================
 static void draw( void )
 {
+
+	int index;
   
 	glClearColor (0.0, 0.0, 0.2, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
-// Placement and rotation of the scene.
-	glTranslatef(0.0,0.0,-5*SIZE);
-	glRotatef(beta, 1.0, 0.0, 0.0);
-	glRotatef(alpha, 0.0, 1.0, 0.0);
-	MakeShapes();
-	glFlush();			         
-	glPopMatrix(); 
+	if(objetos)
+	for(index=0; index<objetos->n; index++){
+		glTranslatef(objetos->obj[index]->position[0], objetos->obj[index]->position[1], objetos->obj[index]->position[2]);
+		glRotatef(beta, 1.0, 0.0, 0.0);
+		glRotatef(alpha, 0.0, 1.0, 0.0);
+		MakeShapes();
+		DisenaObjeto(objetos->obs[i]);
+ 		
+	}
 
+	glPopMatrix(); 
 // This command will swap animation buffers to display the current frame.
-    glutSwapBuffers();
+  glutSwapBuffers();
 }
 
 //============================================================
@@ -381,6 +437,17 @@ static void sfunc(int k, int x, int y)
    switch (k) 
    {
 
+//Rotate to the top
+   	  case GLUT_KEY_UP:
+   	  beta+=3.0;
+   	  break;
+
+//Rotate to the top
+   	  case GLUT_KEY_DOWN:
+   	  beta-=3.0;
+   	  break;
+
+
 // Rotate to the left
 	  case GLUT_KEY_LEFT:
 	  alpha-=3.0;
@@ -391,6 +458,7 @@ static void sfunc(int k, int x, int y)
 	  alpha+=3.0;
 	  break;
    }
+   glutSwapBuffers();
 }
 
 
@@ -432,8 +500,6 @@ void DisenaObjeto(un_objeto *obj)
 	if(!obj)
 		return;
 
-	glPolygonMode(GL_FRONT_AND_BACK, RendMode);
-glColor3f(0.9f, 1.0f, 0.1f); // troca cor
 	for(i=0; i<obj->faces->n; i++)
 	{
 		glBegin(GL_POLYGON);
@@ -452,7 +518,7 @@ glColor3f(0.9f, 1.0f, 0.1f); // troca cor
 
 
 //============================================================
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
 
 // This is the main program where glut functions are invoked to set up 
@@ -464,7 +530,7 @@ void main( int argc, char *argv[] )
    glutCreateWindow ("Sample OpenGL program.          \
    Use  -->,  <--,  <f>,  and  <Esc> keys.");
 
-   Init();
+   Init(); 
    glutReshapeFunc(reshape);
    glutIdleFunc(idle);
    glutDisplayFunc(draw);
@@ -477,4 +543,6 @@ void main( int argc, char *argv[] )
 
 // The main event loop is started here.
    glutMainLoop();
+
+	 return 0;
 }
