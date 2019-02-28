@@ -22,13 +22,12 @@
 #define	SIZE	10.0
 
 
-int RendMode = GL_LINE;
-double alpha, beta;
-float ang_rot = 05.0; 
-float vrot_x, vrot_y, vrot_z; 
-float local_escala = 0.9f;
-typedef float f4d[4];
+int RendMode; /* May take values 1 or 2: for wireframe and polygon modes. */
+double alpha, beta;  /* Angles of rotation about vertical and horizontal axes. */
 
+float local_scale = 1.0f;
+
+typedef float f4d[4];
 
 typedef struct st_vector_int
 {
@@ -36,7 +35,6 @@ typedef struct st_vector_int
 	int *indice;	// elemento - indice del vertice
 	f4d vNormal;    // vetor normal da face
 } vector_int;
-
 
 typedef struct st_vector_f4d
 {
@@ -54,21 +52,23 @@ typedef struct st_un_objeto
 {
 	vector_f4d *vertices;		// vector de vertices
 	vector_faces *faces;		// vector de faces
-  f4d *color;
-  f4d *position;
-	f4d *orientation;
-	float escala;
+	f4d cor; 
+	f4d posicao;
+	f4d orientacao;
+	float escala;	
 } un_objeto;
 
 typedef struct st_objetos
 {
 	int n;                      // numero de objetos
-	un_objeto **obs;
-} objetos;                      // n objetos
+	un_objeto **objs;
+} stObjetos;                      // n objetos
 
 // ===========================================
 
-un_objeto *objeto = NULL;		// un objeto
+stObjetos *objetos = NULL;		// un objeto
+
+// ===========================================
 
 
 
@@ -101,11 +101,6 @@ static void Init(void)
 	alpha=-20.0;
 	beta=20.0;
 	RendMode=1;
-
-   vrot_x = 0.0;
-   vrot_y = 0.0;
-   vrot_z = 1.0;
-   
 
  settingUpPointLight();
 
@@ -273,7 +268,7 @@ un_objeto *procSolido(char *arch)
 }
 
 int setUpObject(char *arch)
-{	
+{
   FILE *fobj;
   char token[40], Arquivo[40];
   int i, n;
@@ -287,9 +282,9 @@ int setUpObject(char *arch)
      return 0; 
   }
    
-  if (objeto) objeto = liberaObjeto(objeto);
+  if (objetos) objetos = liberaObjetos(objetos);
 
-  if((objeto = (un_objeto*) malloc(sizeof(un_objeto)))==NULL)
+  if((objetos = (stObjetos*) malloc(sizeof(stObjetos)))==NULL)
   {
 		printf("\n Error en alocacion de memoria para un_objeto");
 		return 0;
@@ -301,38 +296,38 @@ int setUpObject(char *arch)
 
   fscanf (fobj, "%s %d", token, &n);
 
-  objeto->obs = (un_objeto**) malloc(n*sizeof(un_objeto*));
-  objeto->n = n;
+  objetos->objs = (un_objeto**) malloc(n*sizeof(un_objeto*));
+  objetos->n = n;
   printf("\n n: %d", n);
    printf(" \n antes do for ");
-  for(i=0; i<objeto->n; i++){
+  for(i=0; i<objetos->n; i++){
   	fscanf(fobj, "%s %s", token, Arquivo);
   	printf(" \n arquivo %s", Arquivo);
-  	objeto->obs[i] = procSolido(Arquivo);
+  	objetos->objs[i] = procSolido(Arquivo);
 
   	fscanf(fobj, "%s %f %f %f %f", token, &x, &y, &z, &d);
-  	printf("\n color: %f %f %f %f", x, y, z, d);
-  	objeto->obs[i]->color[0] = x;
-  	objeto->obs[i]->color[1] = y;
-  	objeto->obs[i]->color[2] = z;
-  	objeto->obs[i]->color[3] = d;
+  	printf("\n cor: %f %f %f %f", x, y, z, d);
+  	objetos->objs[i]->cor[0] = x;
+  	objetos->objs[i]->cor[1] = y;
+  	objetos->objs[i]->cor[2] = z;
+  	objetos->objs[i]->cor[3] = d;
 
   	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
-  	printf("\n position: %f, %f, %f", x, y, z);
-  	objeto->obs[i]->position[0] = x;
-  	objeto->obs[i]->position[1] = y;
-  	objeto->obs[i]->position[2] = z;
-  	objeto->obs[i]->position[3] = 0.0;
+  	printf("\n posicao: %f, %f, %f", x, y, z);
+  	objetos->objs[i]->posicao[0] = x;
+  	objetos->objs[i]->posicao[1] = y;
+  	objetos->objs[i]->posicao[2] = z;
+  	objetos->objs[i]->posicao[3] = 0.0;
 
   	fscanf(fobj, "%s %f %f %f", token, &x, &y, &z);
-  	printf("\n orientation: %f, %f, %f", x, y, z);
-  	objeto->obs[i]->orientation[0] = x;
-  	objeto->obs[i]->orientation[1] = y;
-  	objeto->obs[i]->orientation[2] = z;
-  	objeto->obs[i]->orientation[3] = 0.0;
+  	printf("\n orientacao: %f, %f, %f", x, y, z);
+  	objetos->objs[i]->orientacao[0] = x;
+  	objetos->objs[i]->orientacao[1] = y;
+  	objetos->objs[i]->orientacao[2] = z;
+  	objetos->objs[i]->orientacao[3] = 0.0;
 
   	fscanf(fobj, "%s %f", token, &d);
-  	objeto->obs[i]-> escala - d;
+  	objetos->objs[i]-> escala - d;
   }
    printf(" \n fechando arquivo varios ");
   fclose(fobj);
